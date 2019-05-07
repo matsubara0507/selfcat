@@ -21,9 +21,11 @@ import           Data.Version           (Version)
 import qualified Data.Version           as Version
 import           Development.GitRev
 import           Mix
+import           Mix.Plugin.GitHub      as MixGitHub
 import           Mix.Plugin.Logger      as MixLogger
 import           Selfcat.Cmd
-import           Selfcat.Env
+import           Selfcat.Config
+import           System.Environment     (getEnv)
 
 main :: IO ()
 main = withGetOpt "[options] [input-file]" opts $ \r args -> do
@@ -35,11 +37,13 @@ main = withGetOpt "[options] [input-file]" opts $ \r args -> do
   where
     opts = #version @= versionOpt
         <: #verbose @= verboseOpt
+        <: #output  @= outputOpt
         <: nil
 
 type Options = Record
   '[ "version" >: Bool
    , "verbose" >: Bool
+   , "output"  >: FilePath
    ]
 
 versionOpt :: OptDescr' Bool
@@ -47,6 +51,12 @@ versionOpt = optFlag [] ["version"] "Show version"
 
 verboseOpt :: OptDescr' Bool
 verboseOpt = optFlag ['v'] ["verbose"] "Enable verbose mode: verbosity level \"debug\""
+
+outputOpt :: OptDescr' FilePath
+outputOpt = optionReqArg f ['o'] ["output"] "PATH" "Directory path for outputs"
+  where
+    defaultValue = "."
+    f = pure . fromMaybe defaultValue . listToMaybe
 
 showVersion :: Version -> String
 showVersion v = unwords
@@ -58,10 +68,14 @@ showVersion v = unwords
   ]
 
 runCmd :: Options -> FilePath -> IO ()
-runCmd opts _path = Mix.run plugin cmd
-  where
-    plugin :: Mix.Plugin () IO Env
-    plugin = hsequence
-        $ #logger <@=> MixLogger.buildPlugin logOpts
-       <: nil
-    logOpts = #handle @= stdout <: #verbose @= (opts ^. #verbose) <: nil
+runCmd opts path = do
+  config <- readConfig path
+  token  <- liftIO $ fromString  <$> getEnv "GH_TOKEN"
+  let logOpts = #handle @= stdout <: #verbose @= (opts ^. #verbose) <: nil
+      plugin  = hsequence
+          $ #config <@=> pure config
+         <: #output <@=> pure (opts ^. #output)
+         <: #github <@=> MixGitHub.buildPlugin token
+         <: #logger <@=> MixLogger.buildPlugin logOpts
+         <: nil
+  Mix.run plugin cmd
