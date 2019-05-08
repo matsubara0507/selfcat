@@ -1,5 +1,7 @@
 # selfcat
 
+[![](https://images.microbadger.com/badges/image/matsubara0507/selfcat.svg)](https://microbadger.com/images/matsubara0507/selfcat "Get your own image badge on microbadger.com")
+
 collect self GitHub's status
 
 ## Install
@@ -8,6 +10,12 @@ use Haskell Stack:
 
 ```
 $ stack install
+```
+
+use Docker Imgae:
+
+```
+$ docker pull matsubara0507/selfcat
 ```
 
 ## Usage
