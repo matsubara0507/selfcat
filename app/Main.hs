@@ -38,12 +38,14 @@ main = withGetOpt "[options] [input-file]" opts $ \r args -> do
     opts = #version @= versionOpt
         <: #verbose @= verboseOpt
         <: #output  @= outputOpt
+        <: #compact @= compactOpt
         <: nil
 
 type Options = Record
   '[ "version" >: Bool
    , "verbose" >: Bool
    , "output"  >: FilePath
+   , "compact" >: Bool
    ]
 
 versionOpt :: OptDescr' Bool
@@ -57,6 +59,9 @@ outputOpt = optionReqArg f ['o'] ["output"] "PATH" "Directory path for outputs"
   where
     defaultValue = "."
     f = pure . fromMaybe defaultValue . listToMaybe
+
+compactOpt :: OptDescr' Bool
+compactOpt = optFlag [] ["compact"] "Compaction to one file json, set file name to --output option"
 
 showVersion :: Version -> String
 showVersion v = unwords
@@ -73,9 +78,9 @@ runCmd opts path = do
   token  <- liftIO $ fromString  <$> getEnv "GH_TOKEN"
   let logOpts = #handle @= stdout <: #verbose @= (opts ^. #verbose) <: nil
       plugin  = hsequence
-          $ #config <@=> pure config
-         <: #output <@=> pure (opts ^. #output)
-         <: #github <@=> MixGitHub.buildPlugin token
-         <: #logger <@=> MixLogger.buildPlugin logOpts
+          $ #config  <@=> pure config
+         <: #output  <@=> pure (opts ^. #output)
+         <: #github  <@=> MixGitHub.buildPlugin token
+         <: #logger  <@=> MixLogger.buildPlugin logOpts
          <: nil
-  Mix.run plugin cmd
+  Mix.run plugin $ if opts ^. #compact then cmdCompact else cmd
