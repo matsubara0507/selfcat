@@ -1,20 +1,16 @@
-resolver: lts-13.20
+resolver: lts-17.0
 packages:
 - '.'
 extra-deps:
-- rio-0.1.9.2
-- extensible-0.5
-- github-0.21
+- extensible-0.8.1
+- membership-0
+- incremental-0.3.1
 - github: matsubara0507/mix.hs
-  commit: a476a706aa2b319683cc4eba612897486f01e9ac
+  commit: 75714be080db16f6a4f9d0a22e86947ffcdadc57
   subdirs:
   - mix
   - mix-plugin-github
 
 docker:
-  repo: fpco/stack-build
+  repo: matsubara0507/stack-build
   enable: false
-image:
-  container:
-    name: matsubara0507/selfcat
-    base: matsubara0507/ubuntu-for-haskell

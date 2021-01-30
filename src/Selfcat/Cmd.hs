@@ -59,7 +59,7 @@ buildJson name info = do
 fetchUserInfo :: Text -> RIO Env (Maybe UserInfo)
 fetchUserInfo name = do
   logDebug $ display $ mconcat ["fetch github: ", name]
-  resp <- MixGitHub.fetch $ \auth -> GitHub.userInfoFor' (Just auth)
+  resp <- MixGitHub.fetch $ GitHub.userInfoForR
     (mkName Proxy name)
   case resp of
     Left err   -> logError (displayShow err) >> pure Nothing
@@ -68,7 +68,7 @@ fetchUserInfo name = do
 fetchRepoInfo :: Text -> Text -> RIO Env (Maybe RepoInfo)
 fetchRepoInfo owner name = do
   logDebug $ display $ mconcat ["fetch github: ", owner, "/", name]
-  resp <- MixGitHub.fetch $ \auth -> GitHub.repository' (Just auth)
+  resp <- MixGitHub.fetch $ GitHub.repositoryR
     (mkName Proxy owner)
     (mkName Proxy name)
   case resp of
