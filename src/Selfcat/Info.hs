@@ -66,6 +66,6 @@ instance ToInfo GitHub.Repo RepoInfo where
      <: #url         @= getUrl (GitHub.repoHtmlUrl repo)
      <: #description @= fromMaybe "" (GitHub.repoDescription repo)
      <: #star_cnt    @= GitHub.repoStargazersCount repo
-     <: #fork_cnt    @= fromMaybe 0 (GitHub.repoForks repo)
+     <: #fork_cnt    @= GitHub.repoForksCount repo
      <: #language    @= maybe "" GitHub.getLanguage (GitHub.repoLanguage repo)
      <: nil
