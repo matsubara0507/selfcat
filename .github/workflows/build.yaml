@@ -45,6 +45,13 @@ jobs:
     - name: Build and Test
       run: stack --system-ghc test --copy-bins --local-bin-path=./bin
 
+    - name: Run example
+      run: |
+        stack --system-ghc exec -- selfcat --output=example/outputs example/.selfcat.yaml
+        git status example
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     # Build and Push Docker Image
     - name: Prepare
       id: prep
