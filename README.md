@@ -37,3 +37,12 @@ And exec command with example:
 $ selfcat --output=example/outputs example/.selfcat.yaml
 Success.
 ```
+
+## Development
+
+build docker image
+
+```
+$ stack build --docker --copy-bins --local-bin-path=./bin
+$ docker build -t ghcr.io/matsubara0507/selfcat . --build-arg local_bin_path=./bin
+```
