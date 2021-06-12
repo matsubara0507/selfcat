@@ -1,6 +1,6 @@
 # selfcat
 
-[![](https://images.microbadger.com/badges/image/matsubara0507/selfcat.svg)](https://microbadger.com/images/matsubara0507/selfcat "Get your own image badge on microbadger.com")
+[![Build Application](https://github.com/matsubara0507/selfcat/actions/workflows/build.yaml/badge.svg)](https://github.com/matsubara0507/selfcat/actions/workflows/build.yaml)
 
 collect self GitHub's status
 
